@@ -1,22 +1,43 @@
-import React from 'react';
+import React, { Component } from 'react';
 import NavContainer from './nav_container';
-import { NavLink } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { signIn, signOut } from '../../actions';
+import NavItem from './nav_item';
 
-export default props => {
-    return (
-        <NavContainer>
-            <li className="nav-item">
-                <NavLink exact className="nav-link" to="/">Home</NavLink>
-            </li>
-            <li className="nav-item">
-                <NavLink className="nav-link" to="/about">About</NavLink>
-            </li>
-            <li className="nav-item">
-                <NavLink className="nav-link" to="/secret-list">Secret List</NavLink>
-            </li>
-            <li className="nav-item">
-                <NavLink className="nav-link" to="/movie-quote">Movie Quote</NavLink>
-            </li>
-        </NavContainer>
-    );
+class Nav extends Component {
+
+    renderAuthButton(){
+        const { auth, signIn, signOut } = this.props;
+
+        if(auth){
+            return <button onClick={signOut} className="btn btn-outline-danger">Sign Out</button>
+        }
+
+        return <button onClick={signIn} className="btn btn-outline-primary">Sign In</button>
+    }
+
+    render(){
+        return (
+            <NavContainer>
+                <NavItem to="/" text="Home" />
+                <NavItem to="/about" text="About" />
+                <NavItem to="/not-secret-list" text="Not Secret List" />
+                <NavItem to="/secret-list" text="Secret List" />
+                <NavItem to="/movie-quote" text="Movie Quote" />
+                
+                <li className="nav-item">
+                    {this.renderAuthButton()}
+                </li>
+            </NavContainer>
+        );
+    }
 }
+
+function mapStateToProps(state){
+    return {
+        auth: state.user.auth
+    }
+}
+
+export default withRouter(connect(mapStateToProps, { signIn: signIn, signOut: signOut })(Nav));
